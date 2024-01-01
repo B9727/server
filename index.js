@@ -10,6 +10,7 @@ import getUser from "./routes/users.js";
 import createUser from "./routes/auth.js";
 import imageProcessing from "./routes/images.js"
 import postRouter from "./routes/post.js";
+import { scheduler } from "./cron_jobs/boost.js";
 
 // initialise the app
 const app = express()
@@ -54,6 +55,9 @@ mongoose.connect(process.env.MONGO_URL, {
   useUnifiedTopology: true,
 });
 console.log("Connection to database --success");
+
+// cron jobs
+scheduler()
 
 // server listening PORT
 const PORT = process.env.PORT || 5000;
