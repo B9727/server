@@ -29,6 +29,10 @@ const commentSchema = new Schema(
       type: String,
       required: true,
     },
+    post_id: {
+      type: String,
+      required: true,
+    },
   },
   { timestamps: true }
 );

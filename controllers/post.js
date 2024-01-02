@@ -28,7 +28,7 @@ export const addPost = async (req, res) => {
         content: req.body.content,
         user_id: req.body.userId,
         author: postAuthor.username,
-        author_profile_picture: postAuthor.profileUrl, 
+        author_profile_picture: postAuthor.profileUrl,
       });
       await newPost.save();
       res.status(200).json({ message: "Post successfully added" });
@@ -45,13 +45,22 @@ export const addComment = async (req, res) => {
   try {
     const newComment = new Comment({
       user_id: req.body.userId,
-      comment: req.body.comment,
+      comment: req.body.comment_body,
+      post_id: req.body.post_id
     });
+
+    const newComment_ = {
+      user_id: req.body.userId,
+      comment: req.body.comment_body,
+      post_id: req.body.post_id
+    }
     const post = await Post.findOne({ _id: req.body.post_id });
-    post.comments = [...post.comments, newComment];
-    // await newComment.save();
-    await post.save();
-    res.status(200).json({ message: "Comment successfully added" });
+    if (post) {
+      post.comments = [...post.comments, newComment_];
+      // await newComment.save();
+      await post.save();
+      res.status(200).json({ message: "Comment successfully added" });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -61,12 +70,11 @@ export const addComment = async (req, res) => {
 // Edit Actions
 
 // Edit Post
-export const editPost = async (req, res) => {};
+export const editPost = async (req, res) => { };
 
 // Edit Comment
-export const editComment = async (req, res) => {};
+export const editComment = async (req, res) => { };
 
-// Delete Actions
 // Delete Post
 export const deletePost = async (req, res) => {
   try {

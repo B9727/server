@@ -64,6 +64,7 @@ const shuffleArray = (array) => {
   }
   return array;
 };
+
 router.get("/", async (req, res) => {
   try {
       const allImages = await Image.find().sort({ createdAt: -1 });
