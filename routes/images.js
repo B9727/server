@@ -57,15 +57,27 @@ router.post("/upload", async (req, res) => {
 });
 
 // get all images
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
 router.get("/", async (req, res) => {
   try {
-    const allImages = await Image.find().sort({ createdAt: -1 });
-    const imageResponse = allImages.length > 0 ? allImages : "No Images";
-    res.status(200).json(imageResponse);
+      const allImages = await Image.find().sort({ createdAt: -1 });
+      
+      // Shuffle the array of images
+      const shuffledImages = shuffleArray(allImages);
+
+      const imageResponse = shuffledImages.length > 0 ? shuffledImages : "No Images";
+      res.status(200).json(imageResponse);
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 // personal images
 router.get("/profile", (req, res) => {
