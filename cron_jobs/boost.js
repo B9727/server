@@ -73,7 +73,7 @@ export const scheduler = () => {
     cron.schedule("0 */4 * * *", async () => {
         try {
             console.log('Running cron job every 4 hours...');
-            await viewsBooster(1000, 21);
+            await viewsBooster(1000, 11);
             console.log('Cron job completed successfully.');
         } catch (error) {
             console.error('Error in cron job:', error);
@@ -81,13 +81,13 @@ export const scheduler = () => {
     });
 
     // Every 12 hours
-    cron.schedule("0 0,12 * * *", async () => {
-        try {
-            console.log('Running cron job...');
-            await viewsBooster(20000, 111);
-            console.log('Cron job completed successfully.');
-        } catch (error) {
-            console.error('Error in cron job:', error);
-        }
-    });
+    // cron.schedule("0 0,12 * * *", async () => {
+    //     try {
+    //         console.log('Running cron job...');
+    //         await viewsBooster(20000, 111);
+    //         console.log('Cron job completed successfully.');
+    //     } catch (error) {
+    //         console.error('Error in cron job:', error);
+    //     }
+    // });
 };
