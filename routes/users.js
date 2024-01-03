@@ -51,12 +51,24 @@ router.put("/put", async (req, res) => {
 
 router.get("/all", async (req, res) => {
   try {
-    const photographers = await User.find({ isCreator: true }).sort({createdAt: -1});
+    const photographers = await User.find({ isCreator: true }).sort({ createdAt: -1 });
     const filteredPhotographers = photographers.map((photographer) => {
       const { password, updatedAt, ...other } = photographer._doc;
       return other;
     });
     res.status(200).json(filteredPhotographers);
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+router.get("/", async (req, res) => {
+  try {
+    const users__ = await User.find().sort({ createdAt: -1 });
+    const users = users__.map((photographer) => {
+      const { password, updatedAt, ...other } = photographer._doc;
+      return other;
+    });
+    res.status(200).json(users);
   } catch (error) {
     res.status(500).json(error);
   }
