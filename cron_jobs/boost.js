@@ -37,37 +37,37 @@ const viewsBooster = async (threshold, increment) => {
 
 export const scheduler = () => {
     // Every 10 minutes
-    cron.schedule("*/10 * * * *", async () => {
-        try {
-            console.log('Running cron job every 10 minutes...');
-            await viewsBooster(10000, 11);
-            console.log('Cron job completed successfully.');
-        } catch (error) {
-            console.error('Error in cron job:', error);
-        }
-    });
+    // cron.schedule("*/10 * * * *", async () => {
+    //     try {
+    //         console.log('Running cron job every 10 minutes...');
+    //         await viewsBooster(10000, 11);
+    //         console.log('Cron job completed successfully.');
+    //     } catch (error) {
+    //         console.error('Error in cron job:', error);
+    //     }
+    // });
 
     // Every 30 minutes
-    cron.schedule("*/30 * * * *", async () => {
-        try {
-            console.log('Running cron job every 30 minutes...');
-            await viewsBooster(5000, 12);
-            console.log('Cron job completed successfully.');
-        } catch (error) {
-            console.error('Error in cron job:', error);
-        }
-    });
+    // cron.schedule("*/30 * * * *", async () => {
+    //     try {
+    //         console.log('Running cron job every 30 minutes...');
+    //         await viewsBooster(5000, 12);
+    //         console.log('Cron job completed successfully.');
+    //     } catch (error) {
+    //         console.error('Error in cron job:', error);
+    //     }
+    // });
 
     // Every 1 hour
-    cron.schedule("0 * * * *", async () => {
-        try {
-            console.log('Running cron job every hour...');
-            await viewsBooster(3000, 31);
-            console.log('Cron job completed successfully.');
-        } catch (error) {
-            console.error('Error in cron job:', error);
-        }
-    });
+    // cron.schedule("0 * * * *", async () => {
+    //     try {
+    //         console.log('Running cron job every hour...');
+    //         await viewsBooster(3000, 31);
+    //         console.log('Cron job completed successfully.');
+    //     } catch (error) {
+    //         console.error('Error in cron job:', error);
+    //     }
+    // });
 
     // Every 4 hours
     cron.schedule("0 */4 * * *", async () => {
