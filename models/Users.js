@@ -48,6 +48,10 @@ const UserSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isS_C: {
+      type: Boolean,
+      default: false,
+    },
     hourlyRate: {
       type: Number,
       default: 0,

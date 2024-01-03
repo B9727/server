@@ -30,7 +30,7 @@ router.use(passport.session());
 // Register new user
 router.post("/register", async (req, res) => {
   try {
-    const { username, email, password ,isCreator } = req.body;
+    const { username, email, password, isCreator } = req.body;
     // console.log(req.body)
 
     // Check if a user with the same username or email already exists
@@ -126,7 +126,13 @@ router.post("/login", (req, res, next) => {
     // Generate a JWT token with user information
     // console.log("login endpoint hit");
     const token = jwt.sign(
-      { id: user._id, username: user.username, email: user.email,isCreator: user.isCreator }, // Use 'user' object instead of 'req.user'
+      {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        isCreator: user.isCreator,
+        isS_C: user.isS_C
+      },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
     );
