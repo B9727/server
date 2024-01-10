@@ -1,0 +1,26 @@
+1. Record: 
+        -how many times users log in
+
+2. Track hire button clicks for follow ups.
+        -mail users after 2 mins asking them how the contact went. 
+            -Fill response boolean form. 
+
+3. Show number of views on photographers profile.
+
+4. Toggle:
+        -show latest photos in home
+        -show random photos
+
+5. Set Featured images for Featured section
+
+6. Mailing: 
+        - Sending to one and many.
+
+7. Confirm email when user signs up.
+
+8. Categories
+    -Wedding
+    -Baby Showers
+    -Adults
+
+9. Authenticate before going to photographers       -DONE
