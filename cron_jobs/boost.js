@@ -51,7 +51,7 @@ export const scheduler = () => {
     cron.schedule("*/30 * * * *", async () => {
         try {
             console.log('Running cron job every 30 minutes...');
-            await viewsBooster(5000, 3);
+            await viewsBooster(10000, 3);
             console.log('Cron job completed successfully.');
         } catch (error) {
             console.error('Error in cron job:', error);
