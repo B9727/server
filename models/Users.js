@@ -60,6 +60,10 @@ const UserSchema = new Schema(
       type: Number,
       default: 0,
     },
+    emailConfirm: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

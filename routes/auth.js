@@ -7,6 +7,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import MongoStore from "connect-mongo";
+import confirmToken from "../models/auth/ConfirmToken.js";
+import { successfullRegistered, verifyEmail } from "../services/mailer/Mailer.js";
 
 const router = express.Router();
 dotenv.config();
@@ -62,7 +64,31 @@ router.post("/register", async (req, res) => {
       });
 
       const user = await newUser.save();
-      res.status(200).json(user);
+
+      const token = jwt.sign(
+        {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          isCreator: user.isCreator,
+          isS_C: user.isS_C,
+          emailConfirm: false,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+
+      const newConfirmToken = new confirmToken({
+        userID: user._id,
+        confirmCode: Math.floor(100000 + Math.random() * 900000).toString(),
+      });
+
+      await newConfirmToken.save();
+
+      await verifyEmail(user.email, newConfirmToken.confirmCode);
+
+
+      res.status(200).json({ data: "Successfull registration", token });
     }
   } catch (err) {
     console.log(err);
@@ -131,7 +157,8 @@ router.post("/login", (req, res, next) => {
         username: user.username,
         email: user.email,
         isCreator: user.isCreator,
-        isS_C: user.isS_C
+        isS_C: user.isS_C,
+        emailConfirm: user.emailConfirm,
       },
       process.env.JWT_SECRET,
       { expiresIn: "7d" }
@@ -176,3 +203,116 @@ router.post("/logout", authenticateUser, (req, res) => {
 });
 
 export default router;
+
+
+
+
+
+// mailer
+router.post("/confirmemail", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const checkCode = req.body.userCode;
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+      return res.status(401).json({ message: "Invalid or expired token" });
+    }
+
+    const match = await confirmToken.findOne({
+      userID: decoded.id,
+      confirmCode: checkCode,
+    });
+
+    if (!match) {
+      return res.status(400).json({ message: "Email Confirmation Failed" });
+    } else {
+      // Add emailConfirm: true to the token payload
+      const tokenWithConfirmation = { ...decoded, emailConfirm: true };
+
+      User.findOne({ _id: decoded.id })
+        .then((user) => {
+          if (user) {
+            user.emailConfirm = true;
+            return user.save();
+          } else {
+            // User not found
+            throw new Error("User not found");
+          }
+        })
+        .then((updatedUser) => {
+          successfullRegistered(updatedUser.email);
+          // console.log("User email confirmed:", updatedUser);
+        })
+        .catch((error) => {
+          console.error("Error updating user:", error);
+        });
+
+      // Sign the modified token
+      const modifiedToken = jwt.sign(
+        tokenWithConfirmation,
+        process.env.JWT_SECRET
+      );
+
+      // clean the codes
+      await confirmToken.findOneAndDelete({ userID: decoded.id, })
+
+      return res
+        .status(200)
+        .json({ message: "Email Confirmation Success", token: modifiedToken });
+    }
+
+
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
+
+
+
+router.get("/resendConfirmEmailCode", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    console.log("checking token", token)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded)
+
+
+    const match = await confirmToken.findOne({
+      userID: decoded.id,
+    });
+    const user = await User.findOne({ _id: decoded.id })
+
+    if (user) {
+      if (match) {
+        console.log(match)
+        await verifyEmail(user.email, match.confirmCode);
+        return res.status(200).json({ message: "Code sent.", recepient: user.email });
+      } else {
+        const newConfirmToken = new confirmToken({
+          userID: user._id,
+          confirmCode: Math.floor(100000 + Math.random() * 900000).toString(),
+        });
+
+        await newConfirmToken.save();
+
+        await verifyEmail(user.email, newConfirmToken.confirmCode);
+        return res.status(200).json({ message: "Code sent.", recepient: user.email });
+      }
+    } else {
+      return res.status(401).json({ message: "User not found" });
+    }
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
