@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import MongoStore from "connect-mongo";
 import confirmToken from "../models/auth/ConfirmToken.js";
-import { successfullRegistered, verifyEmail } from "../services/mailer/Mailer.js";
+import { sendMail, sendPhotographerMail, successfullRegistered, verifyEmail } from "../services/mailer/Mailer.js";
 
 const router = express.Router();
 dotenv.config();
@@ -263,6 +263,11 @@ router.post("/confirmemail", async (req, res) => {
       // clean the codes
       await confirmToken.findOneAndDelete({ userID: decoded.id, })
 
+      if (decoded.isCreator) {
+        sendPhotographerMail(decoded.email, decoded.username)
+      } else if (!decoded.isCreator) {
+        sendMail(decoded.email, decoded.username)
+      }
       return res
         .status(200)
         .json({ message: "Email Confirmation Success", token: modifiedToken });
