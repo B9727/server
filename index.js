@@ -11,6 +11,7 @@ import createUser from "./routes/auth.js";
 import imageProcessing from "./routes/images.js"
 import postRouter from "./routes/post.js";
 import { scheduler } from "./cron_jobs/boost.js";
+import { sendMail, sendPhotographerMail } from "./services/mailer/Mailer.js";
 
 // initialise the app
 const app = express()
@@ -58,6 +59,8 @@ console.log("Connection to database --success");
 
 // cron jobs
 scheduler()
+// sendMail("nathomadri@gmail.com", "Nathan")
+// sendPhotographerMail("nathomadri@gmail.com", "Mawaya")
 
 // server listening PORT
 const PORT = process.env.PORT || 5000;
