@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import Image from "../models/Image.js";
 import User from "../models/Users.js";
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 5;
 
 const router = express.Router();
 dotenv.config();
