@@ -5,9 +5,10 @@ import dotenv from "dotenv";
 import Image from "../models/Image.js";
 import User from "../models/Users.js";
 
+const ITEMS_PER_PAGE = 10;
+
 const router = express.Router();
 dotenv.config();
-// cloudinary logic
 
 const cloudinaryConfig = cloudinary.config({
   cloud_name: process.env.CLOUDNAME,
@@ -17,7 +18,6 @@ const cloudinaryConfig = cloudinary.config({
 });
 
 router.get("/get-signature", (req, res) => {
-  // console.log("get signature endpoint was hit");
   const timestamp = Math.round(new Date().getTime() / 1000);
   const signature = cloudinary.utils.api_sign_request(
     {
@@ -29,8 +29,6 @@ router.get("/get-signature", (req, res) => {
 });
 
 router.post("/upload", async (req, res) => {
-  // console.log("upload endpoint was hit");
-
   try {
     const newImage = new Image({
       imageUrl: req.body.public_id,
@@ -59,25 +57,35 @@ router.post("/upload", async (req, res) => {
 // get all images
 const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
 };
 
+
+
 router.get("/", async (req, res) => {
   try {
-      const allImages = await Image.find().sort({ createdAt: -1 });
-      
-      // Shuffle the array of images
-      const shuffledImages = shuffleArray(allImages);
+    const page = parseInt(req.query.pg) || 1;
 
-      const imageResponse = shuffledImages.length > 0 ? shuffledImages : "No Images";
-      res.status(200).json(imageResponse);
+    const skipCount = (page - 1) * ITEMS_PER_PAGE;
+
+    const allImages = await Image.find()
+      .sort({ createdAt: -1 })
+      .skip(skipCount)
+      .limit(ITEMS_PER_PAGE);
+
+
+    const shuffledImages = shuffleArray(allImages);
+
+    const imageResponse = shuffledImages.length > 0 ? shuffledImages : "No Images";
+    res.status(200).json(imageResponse);
   } catch (error) {
-      res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 });
+
 
 
 // personal images
