@@ -36,23 +36,11 @@ const viewsBooster = async (threshold, increment) => {
 };
 
 export const scheduler = () => {
-    // Every 10 minutes
-    // cron.schedule("* * * * *", async () => {
-    //     try {
-    //         console.log('Running cron job every 10 minutes...');
-    //         await viewsBooster(1000, 1);
-    //         console.log('Cron job completed successfully.');
-    //     } catch (error) {
-    //         console.error('Error in cron job:', error);
-    //     }
-    // });
-
-    // Every 30 minutes
-    cron.schedule("*/30 * * * *", async () => {
+    cron.schedule("*/60 * * * *", async () => {
         try {
-            console.log('Running cron job every 30 minutes...');
+            // console.log('Running cron job every 60 minutes...');
             await viewsBooster(10000, 3);
-            console.log('Cron job completed successfully.');
+            // console.log('Cron job completed successfully.');
         } catch (error) {
             console.error('Error in cron job:', error);
         }

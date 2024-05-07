@@ -6,19 +6,19 @@ import cors from "cors";
 
 
 // locals imports
-import getUser from "./routes/users.js";
-import createUser from "./routes/auth.js";
-import imageProcessing from "./routes/images.js"
+import userRouter from "./routes/users.js";
+import authRouter from "./routes/auth.js";
+import imageRouter from "./routes/images.js"
 import postRouter from "./routes/post.js";
 import { scheduler } from "./cron_jobs/boost.js";
-import { sendMail, sendPhotographerMail } from "./services/mailer/Mailer.js";
+// import { sendMail, sendPhotographerMail } from "./services/mailer/Mailer.js";
 
 // initialise the app
 const app = express()
 
 dotenv.config();
 
-// middleware
+// middlewareS
 app.use(express.static("public"));
 app.use(express.json());
 app.use(helmet());
@@ -33,19 +33,16 @@ app.use(function (req, res, next) {
   next();
 });
 
-// route
+// routes
 app.get("/", (req, res) => {
   const jsonData = {
-    "Welcome to Shutter": "200 status",
-    "api/auth/login": "Login",
-    "api/auth/register": "Register",
-    "api/images": "Images",
+    "Welcome to Shutterbug SERVER_V2.1.1": "200 status",
   };
   res.json(jsonData);
 });
-app.use("/api/users", getUser);
-app.use("/api/auth", createUser);
-app.use("/api/images", imageProcessing)
+app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/images", imageRouter)
 app.use("/api/postquiz", postRouter)
 
 
