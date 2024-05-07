@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import Image from "../models/Image.js";
 import User from "../models/Users.js";
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 3;
 
 const router = express.Router();
 dotenv.config();
@@ -63,21 +63,26 @@ const shuffleArray = (array) => {
   return array;
 };
 
-
-
+router.get("/featured",)
 router.get("/", async (req, res) => {
   try {
     const page = parseInt(req.query.pg) || 1;
 
     const skipCount = (page - 1) * ITEMS_PER_PAGE;
 
-    const allImages = await Image.find()
-      .sort({ createdAt: -1 })
-      .skip(skipCount)
-      .limit(ITEMS_PER_PAGE);
+    // Define the range of random image sizes (2, 3, or 4)
+    const randomSize = Math.floor(Math.random() * 2) + 2; // Randomly selects 2, 3, or 4
 
+    // Retrieve a larger pool of random images
+    const randomImagesPool = await Image.aggregate([
+      { $sample: { size: 10 } } // Adjust the size as needed to ensure enough random images
+    ]);
 
-    const shuffledImages = shuffleArray(allImages);
+    // Select a random subset of unique images from the pool
+    const uniqueRandomImages = getRandomUniqueImages(randomImagesPool, randomSize);
+
+    // Shuffle the array of unique random images
+    const shuffledImages = uniqueRandomImages.sort(() => Math.random() - 0.5);
 
     const imageResponse = shuffledImages.length > 0 ? shuffledImages : "No Images";
     res.status(200).json(imageResponse);
@@ -85,6 +90,20 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// Function to select a random subset of unique images
+function getRandomUniqueImages(images, size) {
+  const uniqueImages = [];
+  const shuffledImages = images.sort(() => Math.random() - 0.5);
+
+  for (let i = 0; i < shuffledImages.length && uniqueImages.length < size; i++) {
+    if (!uniqueImages.some(image => image._id === shuffledImages[i]._id)) {
+      uniqueImages.push(shuffledImages[i]);
+    }
+  }
+
+  return uniqueImages;
+}
 
 
 
